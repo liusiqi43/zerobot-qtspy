@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 
 import sys
@@ -12,6 +13,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from client import SuperClient
+import zmq
 
 usage = "usage: %prog [options]"
 parser = optparse.OptionParser(usage,version="%prog 0.0.1")
@@ -23,7 +25,7 @@ htmlentities = lambda x : ''.join('&%s;' % entities[ord(c)] if ord(c) in entitie
 
 class QtSpyWindow(QMainWindow):
     def __init__(self, connect_addr):
-        super(MyWindow, self).__init__()
+        super(QMainWindow, self).__init__()
         
         self.ctx = zmq.Context()
         self.receiver = self.ctx.socket(zmq.SUB)
@@ -37,7 +39,7 @@ class QtSpyWindow(QMainWindow):
         self.requests = {}
         
         self.services_views = {}
-        self.services = SuperClient(ctx)
+        self.services = SuperClient(self.ctx)
         
         self.__init_gui()
 
@@ -90,8 +92,8 @@ class QtSpyWindow(QMainWindow):
 
     def on_console_send(self, *args):
         order = self.console.text()
-        #Le but est de récupérer le nom du service, la méthode a appeler et les arguments
-        #on découpe d'abord en trois morceaux avec un regex
+        #Le but est de recuperer le nom du service, la methode a appeler et les arguments
+        #on decoupe d'abord en trois morceaux avec un regex
         res = re.findall(r"([a-zA-Z_\-]*\.)?([a-zA-Z0-9\-_]+) ?\((.*)\)", order)
         service = res[0][0]
         if service == '':
@@ -100,7 +102,7 @@ class QtSpyWindow(QMainWindow):
             service = service[:-1]
         method = res[0][1]
         
-        #Pour récupérer les arguments comme objets python on va utiliser eval
+        #Pour recuperer les arguments comme objets python on va utiliser eval
         #en remplaçant le dict 'locals' par un contenant seulement la fonctione 'identity'
         arguments = "a(%s)" % res[0][2]
         def identity(*args, **kwargs):

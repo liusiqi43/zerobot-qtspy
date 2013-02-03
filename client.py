@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+import sys
+sys.path.append("/mnt/hgfs/siqi/Documents/Coding/zerobot/python3")
+
 import zerobot
 import zmq
 import threading
@@ -23,7 +27,7 @@ class SuperClient:
     def add_client(self, service):
         if not(service in self.clients.keys()):
             client = zerobot.Client("QtSpy-%s" % service, self.connect, service, self.ctx)
-            client.start(False)
+            client.start(True)
             try:
                 client.ping(-42, timeout=1, block=False)
             except Exception:
